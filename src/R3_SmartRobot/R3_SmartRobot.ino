@@ -28,6 +28,7 @@ void setup() {
   pinMode(LT_R,INPUT);
   pinMode(LT_M,INPUT);
   pinMode(LT_L,INPUT);
+  myservo.write(90);  //setservo position according to scaled value
 } 
 
 void loop() { 
@@ -48,14 +49,13 @@ void main_func(unsigned char cnt){
 
   if (cnt == 0){
 /***** 初回処理 ******/
-    myservo.write(90);  //setservo position according to scaled value
+
 /*******************/
   }
   if( cnt%10 == 1 ) {
 /***** 100ms毎処理 *****/
-    /* 超音波センサ取得 */
-   middleDistance = Distance_test();
-   Serial.println(middleDistance);
+  middleDistance = Distance_test();
+  Serial.println(middleDistance);
 /**********************/    
   }
   if ( cnt == 100 ){
@@ -66,19 +66,22 @@ void main_func(unsigned char cnt){
 /***** 10ms毎処理 *****/
   if( middleDistance < 20 ){ /* 壁がある */
     robodir = STOP;
-    robospd = 0;
-  } else { /* 壁ない */
+  } else { /* 壁ないよ */
       if(LT_M){
-        /* 中央ラインセンサが黒検出 */
+        robodir = FORWARD;
+        robospd = 100;
       } else if(LT_R){
-        /* 右側ラインセンサが黒検出 */
+        robodir = RIGHT;
+        robospd = 200;
       } else if(LT_L){
-        /* 左側ラインセンサが黒検出 */
+        robodir = LEFT;
+        robospd = 200;
       } else {
-        /* 線がない */
+        robodir = BACK;
+        robospd = 80;
       }
   }
-  /* ロボット駆動指示 */
+
   robot_drive(robodir,robospd);
 /*********************/
 }
